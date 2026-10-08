@@ -90,12 +90,12 @@
 
     <!-- Container Iframe -->
     <div class="app-container">
-        <!-- Atribut sandbox sudah saya perbarui dengan 'allow-downloads' agar fitur export berfungsi -->
+        <!-- Atribut sandbox ditambahkan 'allow-top-navigation' agar iframe bisa merefresh halaman GitHub -->
         <iframe 
             id="gas-frame"
             src="https://script.google.com/macros/s/AKfycbwo3PADJHak6Wk0ZU63ULw8aBz1sjLMstkgAWSPJmUZ6bQ8PCHtwm-0vhHpccKevUdB/exec" 
             allowfullscreen="true"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation allow-downloads"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-downloads"
             onload="hideLoader()"
         ></iframe>
     </div>
