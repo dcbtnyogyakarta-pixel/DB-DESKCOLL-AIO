@@ -3,65 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard DC</title>
+    <title>Aplikasi Saya</title>
+    
+    <!-- Trik 1: Preconnect ke server Google agar DNS resolution lebih cepat -->
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
     <style>
-        /* Reset margin dan padding default browser */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden; /* Mencegah scrollbar ganda jika konten iframe panjang */
-            background-color: #f0f2f5; /* Warna latar belakang fallback */
+            overflow: hidden;
+            background-color: #f0f2f5; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Container untuk memastikan iframe memenuhi layar */
         .app-container {
             width: 100vw;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: relative;
         }
 
-        /* Gaya untuk iframe itu sendiri */
+        /* Iframe disembunyikan dulu (opacity 0) saat loading */
         iframe {
             width: 100%;
             height: 100%;
-            border: none; /* Menghilangkan border default iframe */
+            border: none;
+            position: absolute;
+            z-index: 1;
+            opacity: 0; 
+            transition: opacity 0.8s ease; /* Efek transisi halus saat muncul */
+        }
+
+        /* Class untuk menampilkan iframe setelah siap */
+        iframe.loaded {
+            opacity: 1;
         }
         
-        /* Loading indicator (opsional, untuk UX yang lebih baik saat script memuat) */
-        #loader {
+        /* Trik 2: Desain Loader yang lebih modern menutupi seluruh layar */
+        #loader-wrapper {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.2rem;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 0.8s ease;
+        }
+
+        /* Animasi Spinner Putar */
+        .spinner {
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #0b5394; /* Warna biru, bisa diubah */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
             color: #555;
-            z-index: -1; /* Berada di belakang iframe setelah iframe dimuat */
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <!-- Indikator loading sederhana -->
-    <div id="loader">Memuat Dashboard...</div>
+    <!-- Layar Loading Baru -->
+    <div id="loader-wrapper">
+        <div class="spinner"></div>
+        <div class="loader-text">Memuat Aplikasi, mohon tunggu sebentar...</div>
+    </div>
 
-    <!-- Container untuk iframe -->
+    <!-- Container Iframe -->
     <div class="app-container">
-        <!-- 
-            Ganti atribut 'src' di bawah ini dengan URL Google Apps Script Anda.
-            URL Anda saat ini sudah saya masukkan.
-        -->
+        <!-- Atribut sandbox sudah saya perbarui dengan 'allow-downloads' agar fitur export berfungsi -->
         <iframe 
             id="gas-frame"
             src="https://script.google.com/macros/s/AKfycbwo3PADJHak6Wk0ZU63ULw8aBz1sjLMstkgAWSPJmUZ6bQ8PCHtwm-0vhHpccKevUdB/exec" 
             allowfullscreen="true"
-            sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-            onload="document.getElementById('loader').style.display='none';"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation allow-downloads"
+            onload="hideLoader()"
         ></iframe>
     </div>
 
+    <script>
+        function hideLoader() {
+            var loader = document.getElementById('loader-wrapper');
+            var iframe = document.getElementById('gas-frame');
+            
+            // Kita beri jeda ekstra (1.5 detik) setelah iframe merespon. 
+            // Ini memberi waktu bagi Google Script di dalam untuk merender isinya, 
+            // sehingga layar putih blank tidak terlalu terlihat.
+            setTimeout(function() {
+                loader.style.opacity = '0'; // Pudar perlahan
+                iframe.classList.add('loaded'); // Iframe muncul perlahan
+                
+                // Hapus loader dari memori setelah transisi selesai (0.8 detik kemudian)
+                setTimeout(function() {
+                    loader.style.display = 'none';
+                }, 800);
+            }, 1500); // 1500 milidetik = 1.5 detik jeda
+        }
+    </script>
 </body>
 </html>
