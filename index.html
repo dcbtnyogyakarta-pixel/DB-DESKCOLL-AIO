@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplikasi Saya</title>
     
-    <!-- Trik 1: Preconnect ke server Google agar DNS resolution lebih cepat -->
+    <!-- Preconnect ke server Google agar DNS resolution lebih cepat -->
     <link rel="preconnect" href="https://script.google.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     
@@ -33,15 +33,14 @@
             position: absolute;
             z-index: 1;
             opacity: 0; 
-            transition: opacity 0.8s ease; /* Efek transisi halus saat muncul */
+            transition: opacity 0.8s ease; 
         }
 
-        /* Class untuk menampilkan iframe setelah siap */
         iframe.loaded {
             opacity: 1;
         }
         
-        /* Trik 2: Desain Loader yang lebih modern menutupi seluruh layar */
+        /* Desain Loader menutupi layar */
         #loader-wrapper {
             position: absolute;
             top: 0;
@@ -60,7 +59,7 @@
         /* Animasi Spinner Putar */
         .spinner {
             border: 5px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #0b5394; /* Warna biru, bisa diubah */
+            border-left-color: #0b5394; 
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -82,7 +81,7 @@
 </head>
 <body>
 
-    <!-- Layar Loading Baru -->
+    <!-- Layar Loading -->
     <div id="loader-wrapper">
         <div class="spinner"></div>
         <div class="loader-text">Memuat Aplikasi, mohon tunggu sebentar...</div>
@@ -90,10 +89,10 @@
 
     <!-- Container Iframe -->
     <div class="app-container">
-        <!-- Atribut sandbox ditambahkan 'allow-top-navigation' agar iframe bisa merefresh halaman GitHub -->
+        <!-- Atribut sandbox memiliki allow-top-navigation dan allow-downloads -->
         <iframe 
             id="gas-frame"
-            src="https://script.google.com/macros/s/AKfycbx-sVUGn41Wn8y5fNaIc0rgn-T9blRvOdpdihNw2qdLhS4VbMapTcWd6DjYHyTzRyES/exec" 
+            src="https://script.google.com/macros/s/AKfycbzrW_BDhN12ASapUUTnnoJylfLIUWzFeDsS5cwY-UDBJcEiIry22mOP_97O9pBTS1hl/exec" 
             allowfullscreen="true"
             sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation allow-downloads"
             onload="hideLoader()"
@@ -101,23 +100,42 @@
     </div>
 
     <script>
+        // Fungsi untuk menyembunyikan loader saat iframe selesai dimuat
         function hideLoader() {
             var loader = document.getElementById('loader-wrapper');
             var iframe = document.getElementById('gas-frame');
             
-            // Kita beri jeda ekstra (1.5 detik) setelah iframe merespon. 
-            // Ini memberi waktu bagi Google Script di dalam untuk merender isinya, 
-            // sehingga layar putih blank tidak terlalu terlihat.
             setTimeout(function() {
-                loader.style.opacity = '0'; // Pudar perlahan
-                iframe.classList.add('loaded'); // Iframe muncul perlahan
+                loader.style.opacity = '0';
+                iframe.classList.add('loaded'); 
                 
-                // Hapus loader dari memori setelah transisi selesai (0.8 detik kemudian)
                 setTimeout(function() {
                     loader.style.display = 'none';
                 }, 800);
-            }, 1500); // 1500 milidetik = 1.5 detik jeda
+            }, 1500); 
         }
+
+        // ==========================================
+        // FITUR BARU: PENANGKAP PESAN DARI APP SCRIPT
+        // ==========================================
+        window.addEventListener('message', function(event) {
+            // Pastikan data pesan ada dan berupa objek
+            if (event.data && typeof event.data === 'object') {
+                
+                // Jika App Script mengirim pesan dengan type 'NAVIGATE_OUT'
+                if (event.data.type === 'NAVIGATE_OUT' && event.data.url) {
+                    console.log("Menerima perintah navigasi ke: " + event.data.url);
+                    // Pindahkan halaman GitHub utama ke URL yang dituju (Keluar dari iframe)
+                    window.location.href = event.data.url;
+                }
+                
+                // Tambahan: Jika Anda nanti butuh fitur Reload dari dalam App Script
+                if (event.data.type === 'RELOAD_PAGE') {
+                    console.log("Menerima perintah memuat ulang halaman.");
+                    window.location.reload();
+                }
+            }
+        });
     </script>
 </body>
 </html>
