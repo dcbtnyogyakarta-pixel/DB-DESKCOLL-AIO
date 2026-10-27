@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Dashboard DC AIO</title>
     <link rel="icon" type="image/png" href="https://img.icons8.com/color/512/speedometer.png">
     
@@ -14,16 +14,24 @@
         body, html {
             margin: 0;
             padding: 0;
+            width: 100%;
             height: 100%;
+            /* Menggunakan 100dvh agar tinggi otomatis menyesuaikan Address Bar di Tablet/Mobile */
+            height: 100dvh; 
             overflow: hidden;
             background-color: #f0f2f5; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .app-container {
-            width: 100vw;
-            height: 100vh;
-            position: relative;
+            width: 100%;
+            height: 100%;
+            height: 100dvh; /* Mencegah bagian bawah terpotong di layar tablet */
+            position: fixed; /* Mengunci kontainer tepat di area layar yang terlihat */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
 
         /* Iframe disembunyikan dulu (opacity 0) saat loading */
@@ -32,6 +40,8 @@
             height: 100%;
             border: none;
             position: absolute;
+            top: 0;
+            left: 0;
             z-index: 1;
             opacity: 0; 
             transition: opacity 0.8s ease; 
@@ -43,11 +53,12 @@
         
         /* Desain Loader menutupi layar */
         #loader-wrapper {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            height: 100dvh;
             background-color: #ffffff;
             display: flex;
             flex-direction: column;
